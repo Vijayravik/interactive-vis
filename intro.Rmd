@@ -1,0 +1,136 @@
+---
+title: "Interactive Visualisation"
+output: html_notebook
+---
+
+## Understanding Interaction
+
+> *“A picture is worth a thousand words. An interface is worth a thousand pictures.” - Ben Shneiderman*
+
+-   Explore common interaction patterns:
+    -   **Select**: mark something as interesting
+    -   **Explore**: show me something else
+    -   **Reconfigure**: show me a different arrangement
+    -   **Encode**: show me a different representation
+    -   **Abstract/Elaborate**: show me more or less detail
+    -   **Filter**: show me something conditionally
+    -   **Connect**: show me related items
+-   Learn the principles of reactive programming
+-   Allowing interactive data-model manipulation
+
+```{r}
+url <- "http://visdown.com/data/cars.csv"
+cars <- read.csv(url) 
+str(cars)
+```
+
+## Tables
+
+Lets start by previewing the table in our html document. We will use the `kable` library to first show the five rows of the data.
+
+```{r, results = "asis"}
+library(knitr)
+kable(cars [1:5, ])
+```
+
+Now if we want to print the entire table, we would need another library called `DT` which has better support for pagination/
+
+```{r}
+# install.packages('DT')
+library(DT)
+datatable(cars, options = list(pageLength = 5))
+```
+
+## Select
+*Mark something as interesting*
+
+```{r}
+attach(cars)
+plot(kmpl, price)
+identify(x = kmpl, y = price, n = 3, label = row.names(cars))
+
+plot(kmpl, price)
+locator(n = 3, type="l") 
+```
+
+
+## Explore
+*Show me something else*
+
+```{r}
+# install.packages('manipulate)
+library(manipulate)
+library(tidyverse)
+ggplot(cars) + aes(x=kmpl, y = price) + geom_point(size = 4)
+manipulate(ggplot(cars) + aes(x=kmpl, y = price) + geom_point(size = size),
+           size = slider(2,4))
+
+```
+
+
+## Connect
+*Show me related items*
+
+```{r}
+# install.packeges('devtools')
+# devtools::install_github("jcheng5/d3scatter")
+library(crosstalk)
+library(d3scatter)
+
+shared_cars <- SharedData$new(cars)
+
+bscols(
+  d3scatter(shared_cars, ~kmpl, ~bhp, ~type, width="100%", height=300),
+  d3scatter(shared_cars, ~kmpl, ~price, ~type, width="100%", height=300)
+)
+```
+
+
+
+## Abstract/Elaborate
+*Show me more or less detail*
+
+```{r}
+
+bscols(widths = c(3,NA,NA),
+  list(
+    filter_checkbox("type", "Type", shared_cars, ~type, inline = TRUE),
+    filter_slider("bhp", "Horsepower", shared_cars, ~bhp, width = "100%")
+  ),
+  d3scatter(shared_cars, ~kmpl, ~price, ~type, width="100%", height=300),
+  d3scatter(shared_cars, ~kmpl, ~price, ~type, width="100%", height=300)
+)
+
+```
+
+
+## Filter
+**show me something conditionally**
+
+```{r}
+# Create a filter input
+
+# Use SharedData like a dataframe with Crosstalk-enabled widgets
+bscols(
+  filter_slider("price", "Price", shared_cars, ~price, step=10, width=250),
+  d3scatter(shared_cars, ~kmpl, ~price, ~type, width="100%", height=300)
+)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
