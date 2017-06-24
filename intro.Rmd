@@ -30,7 +30,7 @@ Lets start by previewing the table in our html document. We will use the `kable`
 
 ```{r, results = "asis"}
 library(knitr)
-kable(cars [1:5, ])
+#kable(cars [1:5, ])
 ```
 
 Now if we want to print the entire table, we would need another library called `DT` which has better support for pagination/
